@@ -18,7 +18,13 @@ wss.on("connection", function connection(ws) {
 
   console.log("New connection!");
 
+  const duplexStream = createWebSocketStream(ws, { decodeStrings: false });
 
+  duplexStream.on("data", async (data: string) => {
+    const dataToString = data.toString();
+    console.log(`Recived command: ${dataToString}`);
+    router(dataToString, duplexStream);
+  });
 });
 
 process.on("SIGINT", () => {
