@@ -2,6 +2,7 @@ import { httpServer } from "./http_server/index.js";
 import { WebSocketServer, createWebSocketStream } from "ws";
 import "dotenv/config";
 import router from "./router/index.js";
+import { AddressInfo } from "net";
 
 const HTTP_PORT: number = Number(process.env.HTTP_PORT) || 8181;
 const WS_PORT: number = Number(process.env.WS_PORT) || 8080;
@@ -9,14 +10,17 @@ const WS_PORT: number = Number(process.env.WS_PORT) || 8080;
 console.log(`Start static http server on the ${HTTP_PORT} port!`);
 httpServer.listen(HTTP_PORT);
 
-const wss = new WebSocketServer({ port: WS_PORT }, () =>
-  console.log(`Start web socket server on the ${WS_PORT} port!`)
-);
+const wss = new WebSocketServer({ port: WS_PORT });
 
-wss.on("connection", function connection(ws) {
-  ws.on("close", () => console.log("[Server] Client disconnected."));
+wss.on("listening", () => {
+  const { port } = wss.address() as AddressInfo;
+  console.log(`Start web socket server on the ${port} port!`);
+});
 
-  console.log("New connection!");
+wss.on("connection", function connection(ws, req) {
+  const clientAddress = req.socket.remoteAddress;
+  console.log(`Client connected: ${clientAddress}`);
+  ws.on("close", () => console.log(`Client disconnected: ${clientAddress}`));
 
   const duplexStream = createWebSocketStream(ws, { decodeStrings: false });
 

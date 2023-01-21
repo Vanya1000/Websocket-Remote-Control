@@ -1,6 +1,7 @@
 import internal from "stream";
 import { drawShape } from "../actions/drawShape.js";
 import { mouseMove } from "../actions/mouseMove.js";
+import { printScreen } from "../actions/printScreen.js";
 import { parseMessage, validateData } from "../utils/index.js";
 
 const router = async (data: string, stream: internal.Duplex) => {
@@ -11,6 +12,7 @@ const router = async (data: string, stream: internal.Duplex) => {
     console.log("Invalid data!");
     return;
   }
+  console.log(cmd);
   switch (cmd) {
     case "mouse":
       const mouseMsg = await mouseMove(subCMD, value);
@@ -21,6 +23,11 @@ const router = async (data: string, stream: internal.Duplex) => {
       const drawMsg = await drawShape(subCMD, value);
       console.log(`${"Result:"} ${drawMsg}`);
       stream.write(drawMsg);
+      return;
+    case "prnt":
+      const printScreenMsg = await printScreen(subCMD);
+      console.log(`${"Result:"} ${printScreenMsg}`);
+      stream.write(printScreenMsg);
       return;
     default:
       console.log("Unknown action");

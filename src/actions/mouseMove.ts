@@ -1,7 +1,6 @@
 import { mouse, up, down, left, right } from "@nut-tree/nut-js";
 
 export const mouseMove = async (subCMD: string, value: string[]) => {
-  const mouseVal = value[0];
   const withoutValue = `mouse_${subCMD}_${value}`;
   switch (subCMD) {
     case "up":
