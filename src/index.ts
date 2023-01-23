@@ -17,10 +17,9 @@ wss.on("listening", () => {
   console.log(`Start web socket server on the ${port} port!`);
 });
 
-wss.on("connection", function connection(ws, req) {
-  const clientAddress = req.socket.remoteAddress;
-  console.log(`Client connected: ${clientAddress}`);
-  ws.on("close", () => console.log(`Client disconnected: ${clientAddress}`));
+wss.on("connection", function connection(ws) {
+  console.log("Client connected");
+  ws.on("close", () => console.log(`Client disconnected`));
 
   const duplexStream = createWebSocketStream(ws, { decodeStrings: false });
 
@@ -32,7 +31,10 @@ wss.on("connection", function connection(ws, req) {
 });
 
 process.on("SIGINT", () => {
-  wss.close();
+  wss.clients.forEach((client) =>
+    client.close(1001, "Server is shutting down")
+  );
+  httpServer.close();
   console.log("\nWeb Socket Server closed.");
   process.exit(0);
 });
