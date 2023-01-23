@@ -18,8 +18,7 @@ export const drawShape = async (subCMD: string, value: string[]) => {
     case "circle":
       mouse.config.mouseSpeed = 500;
       const radius = Number(w);
-      const mouseX = (await mouse.getPosition()).x;
-      const mouseY = (await mouse.getPosition()).y;
+      const { x: mouseX, y: mouseY } = await mouse.getPosition();
       await mouse.pressButton(Button.LEFT);
       for (let i = 0; i <= Math.PI * 2; i += 0.03) {
         const x = mouseX + radius + radius * Math.cos(Math.PI + i);
